@@ -13,12 +13,12 @@ export class User {
   @Column({
     nullable: false,
   })
-  hashed_password: string;
+  hashedPassword: string;
 
   @Column({
     nullable: false,
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP',
   })
-  created_at: string;
+  createdAt: string;
 }
