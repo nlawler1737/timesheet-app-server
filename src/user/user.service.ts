@@ -12,7 +12,7 @@ export class UserService {
   createUser({ email, password }) {
     const createdUser = this.userRepository.create({
       email,
-      hashed_password: 'hashed_' + password,
+      hashedPassword: 'hashed_' + password,
     });
     return this.userRepository.save(createdUser);
   }
