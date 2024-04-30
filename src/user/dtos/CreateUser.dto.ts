@@ -1,5 +1,5 @@
 import { IsEmail, IsNotEmpty, MinLength } from 'class-validator';
-import { IsPassword, ValueMatches } from '../user.validators';
+import { Exclude, Include, ValueMatches } from '../user.validators';
 
 export class CreateUserDto {
   @IsNotEmpty()
@@ -8,11 +8,10 @@ export class CreateUserDto {
 
   @IsNotEmpty()
   @MinLength(12)
-  @IsPassword({
-    exclude: ['password', 'pass', '123', '1234', '12345', '123456'],
-    include: '!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~'.split(''),
-    includeMethod: 'some',
+  @Exclude(['password', 'pass', '123', '1234', '12345', '123456'], {
+    method: 'some',
   })
+  @Include('!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~'.split(''), { method: 'some' })
   password: string;
 
   @IsNotEmpty()

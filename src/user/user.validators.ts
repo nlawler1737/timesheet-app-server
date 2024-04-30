@@ -4,37 +4,74 @@ import {
   ValidationArguments,
 } from 'class-validator';
 
-export function IsPassword(
-  options: {
-    exclude?: string[];
-    include?: string[];
-    includeMethod?: 'every' | 'some';
+export function Exclude(
+  exclude: string[],
+  options?: {
+    method?: 'every' | 'some';
+    caseSensitive?: boolean;
   },
   validationOptions?: ValidationOptions,
 ) {
   return (object: any, propertyName: string) => {
     registerDecorator({
-      name: 'IsPassword',
+      name: 'Exclude',
       target: object.constructor,
       propertyName,
-      constraints: [options],
+      constraints: [exclude, options],
       options: validationOptions,
       validator: {
         validate(value: any, args: ValidationArguments) {
-          const { exclude, include, includeMethod } = args.constraints[0];
-          const lowercase = value.toLowerCase();
-          if (exclude && exclude.some((val) => lowercase.includes(val))) {
+          const [exclude, { method, caseSensitive }] = args.constraints;
+          const text = caseSensitive ? value : value.toLowerCase();
+          if (
+            exclude &&
+            exclude[method || 'every']((val) =>
+              text.includes(caseSensitive ? val : '' + val.toLowerCase()),
+            )
+          ) {
             return false;
           }
+          return true;
+        },
+        defaultMessage(args: ValidationArguments) {
+          return `${args.property} must not contain ${args.constraints[1].method === 'some' ? 'any of' : ''} ${args.constraints[0]}.`;
+        },
+      },
+    });
+  };
+}
+
+export function Include(
+  include: string[],
+  options?: {
+    method?: 'every' | 'some';
+    caseSensitive?: boolean;
+  },
+  validationOptions?: ValidationOptions,
+) {
+  return (object: any, propertyName: string) => {
+    registerDecorator({
+      name: 'Include',
+      target: object.constructor,
+      propertyName,
+      constraints: [include, options],
+      options: validationOptions,
+      validator: {
+        validate(value: any, args: ValidationArguments) {
+          const [include, { method, caseSensitive }] = args.constraints;
+          const text = caseSensitive ? value : value.toLowerCase();
           if (
             include &&
-            include[includeMethod || 'every']((val) => !lowercase.includes(val))
+            include[method || 'every'](
+              (val) =>
+                !text.includes(caseSensitive ? val : '' + val.toLowerCase()),
+            )
           ) {
             return true;
           }
         },
         defaultMessage(args: ValidationArguments) {
-          return `Password must contain a special character and must not contain ${args.constraints[0].exclude}.`;
+          return `${args.property} must contain must contain ${args.constraints[1].method === 'some' ? 'any of' : ''} ${args.constraints[0]}.`;
         },
       },
     });
@@ -47,7 +84,7 @@ export function ValueMatches(
 ) {
   return (object: any, propertyName: string) => {
     registerDecorator({
-      name: 'IsPassword',
+      name: 'ValueMatches',
       target: object.constructor,
       propertyName,
       constraints: [property],
