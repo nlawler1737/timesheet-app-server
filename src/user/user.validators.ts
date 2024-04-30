@@ -97,7 +97,7 @@ export function ValueMatches(
           return true;
         },
         defaultMessage(args: ValidationArguments) {
-          return `Passwords must match.`;
+          return `${args.property} and ${args.constraints[0]} must match.`;
         },
       },
     });
