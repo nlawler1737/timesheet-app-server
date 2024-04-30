@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  HttpCode,
   Post,
   UsePipes,
   ValidationPipe,
@@ -23,6 +24,7 @@ export class ApiController {
   }
 
   @Post('auth/create')
+  @HttpCode(201)
   @UsePipes(new ValidationPipe())
   async createUser(
     @Body()
