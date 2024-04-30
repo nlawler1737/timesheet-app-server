@@ -1,7 +1,8 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { User } from './entities/user.entity';
-import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import * as bcrypt from 'bcrypt';
+import { User } from './entities/user.entity';
 
 @Injectable()
 export class UserService {
@@ -19,11 +20,18 @@ export class UserService {
       );
     }
 
+    const hashedPassword = await bcrypt.hash(password, 10);
+
     const createdUser = this.userRepository.create({
       email,
-      hashedPassword: 'hashed_' + password,
+      hashedPassword,
     });
 
-    return createdUser;
+    await this.userRepository.save(createdUser);
+
+    return {
+      message: 'User created successfully.',
+      email: createdUser.email,
+    };
   }
 }
