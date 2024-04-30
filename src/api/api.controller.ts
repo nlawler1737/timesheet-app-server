@@ -10,6 +10,7 @@ import {
 import { CreateUserDto } from '../user/dtos/CreateUser.dto';
 import { ApiService } from './api.service';
 import { UserService } from '../user/user.service';
+import { LoginUserDto } from 'src/user/dtos/LoginUser.dto';
 
 @Controller('api')
 export class ApiController {
@@ -33,6 +34,19 @@ export class ApiController {
     return await this.userService.createUser({
       email: createUserData.email,
       password: createUserData.password,
+    });
+  }
+
+  @Post('auth/login')
+  @HttpCode(200)
+  @UsePipes(new ValidationPipe())
+  async login(
+    @Body()
+    loginUserData: LoginUserDto,
+  ) {
+    return await this.userService.login({
+      email: loginUserData.email,
+      password: loginUserData.password,
     });
   }
 }
