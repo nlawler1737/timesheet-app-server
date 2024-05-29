@@ -34,7 +34,6 @@ export class UserService {
     const token = await this.jwtService.signAsync({ email: createdUser.email });
 
     return {
-      message: 'User created successfully.',
       token,
       email: createdUser.email,
     };
@@ -61,7 +60,6 @@ export class UserService {
     const token = await this.jwtService.signAsync(payload);
 
     return {
-      message: 'User logged in successfully.',
       token,
       email: user.email,
     };
