@@ -69,7 +69,7 @@ export class ApiController {
     };
   }
 
-  @Get('project/load')
+  @Get('project/list')
   @HttpCode(200)
   async loadProjects() {
     const projects = await this.projectService.getProjects();
