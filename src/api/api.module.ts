@@ -7,7 +7,7 @@ import { UserModule } from '../user/user.module';
 import { UserService } from '../user/user.service';
 import { ProjectsModule } from '../projects/projects.module';
 import { ProjectsService } from '../projects/projects.service';
-import { Project } from 'src/projects/entities/project.entity';
+import { Project } from '../projects/entities/project.entity';
 
 @Module({
   imports: [

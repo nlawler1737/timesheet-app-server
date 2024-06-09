@@ -1,4 +1,11 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  DeleteDateColumn,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm';
 
 @Entity({ name: 'users' })
 export class User {
@@ -8,17 +15,31 @@ export class User {
   @Column({
     nullable: false,
   })
-  email: string;
+  name: string;
 
   @Column({
     nullable: false,
   })
+  email: string;
+
+  @Column({
+    default: '',
+  })
   hashedPassword: string;
+
+  @ManyToOne(() => User, (user) => user.createdUsers)
+  createdBy?: User;
+
+  @OneToMany(() => User, (user) => user.createdBy)
+  createdUsers: User[];
 
   @Column({
     nullable: false,
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP',
   })
-  createdAt: string;
+  createdAt: Date;
+
+  @DeleteDateColumn()
+  deletedAt?: Date;
 }
