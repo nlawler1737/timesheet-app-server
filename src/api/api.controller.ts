@@ -7,7 +7,6 @@ import {
   HttpException,
   HttpStatus,
   Param,
-  ParseIntPipe,
   Post,
   Put,
   Req,
@@ -119,12 +118,15 @@ export class ApiController {
   @UseGuards(UserGuard)
   @Put(['user', 'user/:id'])
   async updateUser(
-    @Param('id', ParseIntPipe) paramId: number,
+    @Param('id') paramId: number,
     @Body() updateUserData: UpdateUserDto,
     @Req() req: Request & { user: UserJwtPayload },
   ) {
     if (Object.keys(updateUserData).length === 0) {
-      throw new HttpException('No data to update.', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        'No data to update. Provide at least one field.',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     const { id: userId } = req.user;
@@ -149,7 +151,7 @@ export class ApiController {
   @UseGuards(UserGuard)
   @Delete(['user', 'user/:id'])
   async deleteUser(
-    @Param('id', ParseIntPipe) paramId: number,
+    @Param('id') paramId: number,
     @Req() req: Request & { user: UserJwtPayload },
   ) {
     const { id: userId } = req.user;
@@ -161,10 +163,12 @@ export class ApiController {
     };
   }
 
-  @Get('project/list')
+  @UseGuards(UserGuard)
+  @Get('project')
   @HttpCode(200)
-  async loadProjects() {
-    const projects = await this.projectService.getProjects();
+  async loadProjects(@Req() req: Request & { user: UserJwtPayload }) {
+    const { id } = req.user;
+    const projects = await this.projectService.getProjects(id);
     return {
       statusCode: 200,
       message: 'Projects loaded successfully.',
@@ -172,37 +176,86 @@ export class ApiController {
     };
   }
 
-  @Post('project/create')
-  @HttpCode(201)
-  @UsePipes(new ValidationPipe())
-  async createProject(@Body() createProjectData: CreateProjectDto) {
-    const project = await this.projectService.createProject({
-      name: createProjectData.name,
-    });
-
+  @UseGuards(UserGuard)
+  @Get('project/:id')
+  @HttpCode(200)
+  async loadProject(
+    @Param('id') projectId: number,
+    @Req() req: Request & { user: UserJwtPayload },
+  ) {
+    const { id: userId } = req.user;
+    const project = await this.projectService.getProject(userId, projectId);
     return {
-      statusCode: 201,
-      message: 'Project created successfully.',
+      statusCode: 200,
+      message: 'Project loaded successfully.',
       project: project,
     };
   }
 
-  @Put('project/update/:id')
-  async updateProject(
-    @Param('id') id: number,
-    @Body() updateProjectData: UpdateProjectDto,
+  @UseGuards(UserGuard)
+  @Post('project')
+  @HttpCode(201)
+  @UsePipes(new ValidationPipe())
+  async createProject(
+    @Body() createProjectData: CreateProjectDto,
+    @Req() req: Request & { user: UserJwtPayload },
   ) {
-    await this.projectService.updateProject(id, updateProjectData);
+    const { id: userId } = req.user;
+    const project = await this.projectService.createProject(
+      userId,
+      createProjectData,
+    );
+
+    return {
+      statusCode: 201,
+      message: 'Project created successfully.',
+      project: {
+        id: project.id,
+        name: project.name,
+        totalTime: project.totalTime,
+      },
+    };
+  }
+
+  @UseGuards(UserGuard)
+  @Put('project/:id')
+  async updateProject(
+    @Param('id') projectId: number,
+    @Body() updateProjectData: UpdateProjectDto,
+    @Req() req: Request & { user: UserJwtPayload },
+  ) {
+    if (Object.keys(updateProjectData).length === 0) {
+      throw new HttpException(
+        'No data to update. Provide at least one field.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    const { id: userId } = req.user;
+    const updatedProject = await this.projectService.updateProject(
+      userId,
+      projectId,
+      updateProjectData,
+    );
 
     return {
       statusCode: 200,
       message: 'Project updated successfully.',
+      project: {
+        id: updatedProject.id,
+        name: updatedProject.name,
+        totalTime: updatedProject.totalTime,
+      },
     };
   }
 
-  @Delete('project/delete/:id')
-  async deleteProject(@Param('id') id: number) {
-    await this.projectService.deleteProject(id);
+  @UseGuards(UserGuard)
+  @Delete('project/:id')
+  async deleteProject(
+    @Param('id') projectId: number,
+    @Req() req: Request & { user: UserJwtPayload },
+  ) {
+    const { id: userId } = req.user;
+    await this.projectService.deleteProject(userId, projectId);
     return {
       statusCode: 200,
       message: 'Project deleted successfully.',

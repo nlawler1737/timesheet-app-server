@@ -6,6 +6,7 @@ import {
   ManyToOne,
   OneToMany,
 } from 'typeorm';
+import { Project } from '../../projects/entities/project.entity';
 
 @Entity({ name: 'users' })
 export class User {
@@ -32,6 +33,9 @@ export class User {
 
   @OneToMany(() => User, (user) => user.createdBy)
   createdUsers: User[];
+
+  @OneToMany(() => Project, (project) => project.createdBy)
+  createdProjects: Project[];
 
   @Column({
     nullable: false,
