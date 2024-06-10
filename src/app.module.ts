@@ -9,6 +9,9 @@ import { JwtModule } from '@nestjs/jwt';
 import { User } from './user/entities/user.entity';
 import { Project } from './projects/entities/project.entity';
 import { TimeEntry } from './time/entities/time.entity';
+import { ProjectsModule } from './projects/projects.module';
+import { UserModule } from './user/user.module';
+import { TimeModule } from './time/time.module';
 
 @Module({
   imports: [
@@ -29,6 +32,9 @@ import { TimeEntry } from './time/entities/time.entity';
       signOptions: { expiresIn: '3h' },
     }),
     ApiModule,
+    ProjectsModule,
+    UserModule,
+    TimeModule,
   ],
   controllers: [AppController],
   providers: [AppService],
