@@ -4,9 +4,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { TimeEntry } from './entities/time.entity';
 import { UserModule } from '../user/user.module';
 import { TimeController } from './time.controller';
+import { ProjectsModule } from '../projects/projects.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([TimeEntry]), UserModule],
+  imports: [TypeOrmModule.forFeature([TimeEntry]), UserModule, ProjectsModule],
   providers: [TimeService],
   controllers: [TimeController],
 })

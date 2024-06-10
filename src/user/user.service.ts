@@ -160,10 +160,10 @@ export class UserService {
     id: number,
     options = {} as FindOneOptions<User>,
   ): Promise<User> {
-    const { where } = options;
+    const { where, ...rest } = options;
     const user = await this.userRepository.findOne({
       where: { id, ...where },
-      ...options,
+      ...rest,
     });
     return user;
   }

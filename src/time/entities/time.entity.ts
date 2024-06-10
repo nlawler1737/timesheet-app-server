@@ -17,6 +17,7 @@ export class TimeEntry {
 
   @Column({
     type: 'varchar',
+    default: '',
   })
   summary: string;
 
