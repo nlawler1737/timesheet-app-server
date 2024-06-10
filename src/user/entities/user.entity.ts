@@ -7,6 +7,7 @@ import {
   OneToMany,
 } from 'typeorm';
 import { Project } from '../../projects/entities/project.entity';
+import { TimeEntry } from '../../time/entities/time.entity';
 
 @Entity({ name: 'users' })
 export class User {
@@ -36,6 +37,9 @@ export class User {
 
   @OneToMany(() => Project, (project) => project.createdBy)
   createdProjects: Project[];
+
+  @OneToMany(() => TimeEntry, (timeEntry) => timeEntry.createdBy)
+  createdTimeEntires: TimeEntry[];
 
   @Column({
     nullable: false,

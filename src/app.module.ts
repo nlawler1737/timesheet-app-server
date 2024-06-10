@@ -8,6 +8,7 @@ import { ApiModule } from './api/api.module';
 import { JwtModule } from '@nestjs/jwt';
 import { User } from './user/entities/user.entity';
 import { Project } from './projects/entities/project.entity';
+import { TimeEntry } from './time/entities/time.entity';
 
 @Module({
   imports: [
@@ -19,7 +20,7 @@ import { Project } from './projects/entities/project.entity';
       port: Number(process.env.DB_PORT),
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [User, Project],
+      entities: [User, Project, TimeEntry],
       synchronize: true,
     }),
     JwtModule.register({
