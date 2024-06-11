@@ -1,12 +1,17 @@
 import { Module } from '@nestjs/common';
 import { DataSource } from 'typeorm';
-import { User } from './user/entities/user.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ApiModule } from './api/api.module';
 import { JwtModule } from '@nestjs/jwt';
+import { User } from './user/entities/user.entity';
+import { Project } from './projects/entities/project.entity';
+import { TimeEntry } from './time/entities/time.entity';
+import { ProjectsModule } from './projects/projects.module';
+import { UserModule } from './user/user.module';
+import { TimeModule } from './time/time.module';
 
 @Module({
   imports: [
@@ -18,7 +23,7 @@ import { JwtModule } from '@nestjs/jwt';
       port: Number(process.env.DB_PORT),
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [User],
+      entities: [User, Project, TimeEntry],
       synchronize: true,
     }),
     JwtModule.register({
@@ -27,6 +32,9 @@ import { JwtModule } from '@nestjs/jwt';
       signOptions: { expiresIn: '3h' },
     }),
     ApiModule,
+    ProjectsModule,
+    UserModule,
+    TimeModule,
   ],
   controllers: [AppController],
   providers: [AppService],

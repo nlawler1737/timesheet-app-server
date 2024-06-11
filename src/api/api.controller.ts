@@ -7,10 +7,10 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { CreateUserDto } from '../user/dtos/CreateUser.dto';
+import { RegisterUserDto } from '../user/dtos/RegisterUser.dto';
 import { ApiService } from './api.service';
 import { UserService } from '../user/user.service';
-import { LoginUserDto } from 'src/user/dtos/LoginUser.dto';
+import { LoginUserDto } from '../user/dtos/LoginUser.dto';
 
 @Controller('api')
 export class ApiController {
@@ -27,14 +27,21 @@ export class ApiController {
   @Post('auth/create')
   @HttpCode(201)
   @UsePipes(new ValidationPipe())
-  async createUser(
+  async registerUser(
     @Body()
-    createUserData: CreateUserDto,
+    registerUserData: RegisterUserDto,
   ) {
-    return await this.userService.createUser({
-      email: createUserData.email,
-      password: createUserData.password,
+    const createUser = await this.userService.registerUser({
+      name: registerUserData.name,
+      email: registerUserData.email,
+      password: registerUserData.password,
     });
+
+    return {
+      statusCode: 201,
+      message: 'User created successfully.',
+      ...createUser,
+    };
   }
 
   @Post('auth/login')
@@ -44,9 +51,15 @@ export class ApiController {
     @Body()
     loginUserData: LoginUserDto,
   ) {
-    return await this.userService.login({
+    const loginUser = await this.userService.login({
       email: loginUserData.email,
       password: loginUserData.password,
     });
+
+    return {
+      statusCode: 200,
+      message: 'User logged in successfully.',
+      ...loginUser,
+    };
   }
 }
